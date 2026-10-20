@@ -2,25 +2,21 @@
 """Gather data from an API.
 
 Fetches an employee's TODO list progress from the JSONPlaceholder API
-and prints it in a specific format.
+using the requests module, then prints it in a specific format.
 """
-import json
+import requests
 import sys
-import urllib.request
 
 BASE_URL = "https://jsonplaceholder.typicode.com"
 
 
-def fetch_json(url):
-    """Return the decoded JSON body found at the given URL."""
-    with urllib.request.urlopen(url) as response:
-        return json.loads(response.read().decode("utf-8"))
-
-
 def gather_data_for_employee(employee_id):
-    """Return the employee's name and their TODO list progress."""
-    employee = fetch_json("{}/users/{}".format(BASE_URL, employee_id))
-    todos = fetch_json("{}/todos?userId={}".format(BASE_URL, employee_id))
+    """Return the employee's name, completed tasks and total task count."""
+    user_url = "{}/users/{}".format(BASE_URL, employee_id)
+    todos_url = "{}/todos".format(BASE_URL)
+
+    employee = requests.get(user_url).json()
+    todos = requests.get(todos_url, params={"userId": employee_id}).json()
 
     name = employee.get("name")
     total_tasks = len(todos)
